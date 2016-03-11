@@ -20,7 +20,9 @@
       a.discard {position:absolute;top:10px;right:10px;}
       a.shuffle {margin-left:10px;}
       .points {position:absolute;top:20px;right:20px;font-size:21px;font-weight:bold;padding:10px;border:2px solid #333;background-color:#ccc;color:#333;border-radius:5px;}
-      .card, .removed .cardlist li {display:none;}
+      .card, .discarded .cardlist li {display:none;}
+      .disabled, a.disabled:hover {background-color:#ccc;color:#999;cursor:default;border-color:#999;}
+      .gameoptioncheck:hover {cursor:pointer;}
     </style>
     <script type="text/javascript" language="javascript">
       /*! jQuery v1.12.1 | (c) jQuery Foundation | jquery.org/license */
@@ -41,116 +43,188 @@
       function getRandomInt(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
       }
-      function cardshuffle(){
-        // if we run out of cards, shuffle everything except the cards in play into the deck.
-        var oldcardsinplay = $('#cardsinplay').val();
-        $('#cardsused').val(oldcardsinplay);
-      }
       $( document ).ready(function() {
+
         // START A NEW GAME -----------------------------------------------------
         $('.newgame a').click(function() {
           $('.newgame').css('display', 'none');
           $('.optionselect').css('display', 'block');
         });
+
         // SELECT GAME OPTIONS -------------------------------------------------
         $('.optionselect a').click(function() {
           $('.optionselect').css('display', 'none');
           $('.generator, .pool, .shuffle').css('display', 'block');
+          // check for starter card
+          var specificstart = $('#specificstart').val();
+          if (specificstart != "none"){          	
+	          // unhide the taco card
+	          var tacosshow = "#taco-number-" + specificstart;
+	          $(tacosshow).css('display', 'inline-block');   
+	          // Add to the cards used and cards in play hidden form elements
+	          $('#cardsused').val(specificstart);
+	          $('#cardsinplay').val(specificstart);
+	          // check to see if the starter card stays in play
+	          if ($('#hold').is(':checked')){
+	          	$(tacosshow).addClass('regenerate');   
+	          }
+	          // reduce the max card count
+	          var numcardcount = Number($('#cardcount').val(''));
+	          $('#cardcount').val(numcardcount-1);
+          }
+          // set the card count to 18 if you are only using objective missions
+          if ($('#objectivesonly').is(':checked')){
+          	if ($('#hold').is(':checked')){ 
+          		$('#cardcount').val('17');
+          	} else {
+          		$('#cardcount').val('18');
+          	}
+          } 
+          // set variables for doubling points of variable objectives
+          if ($('#doubleobjectives').is(':checked')){
+          	console.log('checked');
+          	$('.CaptureControl .pointsselect option, .TakeHold .pointsselect option, .StormDefend .pointsselect option').each(function(){
+          		var newscoreval = "" + Number($(this).val())*2;
+          		$(this).val(newscoreval);
+          		$(this).html(newscoreval);
+          		console.log(newscoreval);
+          	});
+        	}
+        });
+        // if a specific TacO is drawn at the beginning of the game, then enable the selector to determine whether it remains in play or not.
+				$('#specificstart').change(function() {
+          if ($('#specificstart').val() != "none"){          	
+        		$('#hold').prop('disabled', false);
+        	}else{
+        		$('#hold').prop('disabled', true);
+        	}
         });
         // GENERATE A CARD -----------------------------------------------------
         $('.generator a').click(function() {
+          // get the max card number
+          var maxcards = $('#cardcount').val();
           // get the cards we have already used from the hidden form element
           var cardsused = $('#cardsused').val();
           var cardsinplay = $('#cardsinplay').val();
-          // if it isn't blank, add a trailing comma
-          if (cardsused!=""){
-            cardsused = cardsused + ",";
-          }
-          if (cardsinplay!=""){
-            cardsinplay = cardsinplay + ",";
-          }
-          // create an array for all the exclusions
-		      var exclusionarray = [];
-          // generate random d66 number
-          var tacodraw = "";
-          do {
-		        // roll the 1s place
-		        var onesplace = getRandomInt(1,6);
-		        // roll the 6s place
-		        var sixesplace = getRandomInt(1,6);
-		        // concatinate the digits into a full number
-		        tacodraw = "" + onesplace + sixesplace
-		        // if there are no exclusions, then we are done
-		        if (cardsused != "" && typeof cardsused != "undefined") {
-		          // otherwise, fill the array
-		          exclusionarray = cardsused.split(',');
-		        }
-	        	// if the rolled taco is in the exclusion array, zero out the variable, causing us to loop again
-	        	if(exclusionarray.indexOf(tacodraw) !== -1){
-	          	tacodraw = "";
-	        	}         
+					// we need to be able to count the number of cards in play
+	        var inplayarray = [];
+	        if (cardsinplay != "" && typeof cardsinplay != "undefined") {
+	          // otherwise, fill the array
+	          inplayarray = cardsinplay.split(',');
 	        }
-	        while (tacodraw == "");
-	        // if the array is 36 strong, that means we are about to use up all the cards and must shuffle the discard pile into the deck
-		      console.log(exclusionarray.length);
-		      if (exclusionarray.length >= 35){
-		        cardshuffle()
+	        // create an array for all the exclusions
+		      var exclusionarray = [];
+					// if there are no exclusions, then we are done
+	        if (cardsused != "" && typeof cardsused != "undefined") {
+	          // otherwise, fill the array
+	          exclusionarray = cardsused.split(',');
+	        }
+	        // if the exclusions are equal to the max card number, we need to shuffle the deck
+					if (exclusionarray.length == maxcards){	        
+						// assign the cards in play to the exclusion array so that we don't use them when drawing the card
+				    exclusionarray = inplayarray;
+				    cardsused = cardsinplay;
+				    // clear out the discard pile
+				    $('.discarded .cardlist li').css('display', 'none');
+				  }
+          var tacodraw = "";
+          // if all of the cards are in play, then you can't draw a card	 
+          if ( inplayarray.length >= Number(maxcards)) {     
+        		tacodraw = "All cards are in play.";
+        		// disable the button
+        		$('.generator a').addClass('disabled');
+        		$('.generator a').html('All cards are in play');
+        	} else {
+        		// generate random d66 number or d36 number
+	          do {
+	          	var largeplace = (Number(maxcards)/6);
+			        // roll the 1s place
+			        var onesplace = getRandomInt(1,6);
+			        // roll the 6s place
+			        var sixesplace = getRandomInt(1,largeplace);
+			        // concatinate the digits into a full number
+			        tacodraw = "" + sixesplace + onesplace;
+		        	// if the rolled taco is in the exclusion array, zero out the variable, causing us to loop again
+		        	if(exclusionarray.indexOf(tacodraw) !== -1){
+		          	tacodraw = "";
+		        	} else {
+	        		  // unhide the taco card
+			          var tacosshow = "#taco-number-" + tacodraw;
+			          $(tacosshow).css('display', 'inline-block');  
+			          // add the card to the cards used variable
+			          if (cardsused != ""){
+			          	cardsused += ("," + tacodraw); 
+			          }else{
+			          	cardsused = tacodraw; 
+			          }
+			          if (cardsinplay != ""){
+			          	cardsinplay += ("," + tacodraw); 
+			          }else{
+			          	cardsinplay = tacodraw; 
+			          }     
+			          // replace the cards used element value with the new value, removing the trailing comma
+			          $('#cardsused').val(cardsused);
+			          $('#cardsinplay').val(cardsinplay);
+		        	}
+		        }
+		        while (tacodraw == "");
 		      }
-          // unhide the taco card
-          var tacosshow = "#taco-number-" + tacodraw;
-          $(tacosshow).css('display', 'inline-block');   
-          // add the card to the cards used variable
-          cardsused += (tacodraw + ",");       
-          cardsinplay += (tacodraw + ",");         
-          // replace the cards used element value with the new value, removing the trailing comma
-          $('#cardsused').val(cardsused.slice(0, -1));
-          $('#cardsinplay').val(cardsinplay.slice(0, -1));
         });
-        // DISCARD A CARD ------------------------------------------------------
-        $('a.discard').click(function(){
-          var cardsinplay = $('#cardsinplay').val();
-          // get the cards in play into an array
+
+        // GENERIC CARD REMIVAL FUNCTION
+        function removecard(originator,removetype){
+        	// enable the button if it was disabled because we had all of them in play
+        	$('.generator a').removeClass('disabled');
+        	$('.generator a').html('Draw a Card'); 
+					// get the cards in play into an array
+					var cardsinplay = $('#cardsinplay').val();
           var cardsinplay = $('#cardsinplay').val().split(',');
           // pull out the card number from the id
-          var discardid = $(this).attr('id').split('-');
+          var discardid = $(originator).attr('id').split('-');
+          // build the card's ID
+          var discardcardid = '#taco-number-'+discardid[1];
           // remove it from our array
-          var index = cardsinplay.indexOf(discardid[1])
-          if (index > -1) {
-            cardsinplay.splice(index, 1);
+          var index = cardsinplay.indexOf(discardid[1]);
+          // if this card isn't being regenerated, discard it
+          if (!$(discardcardid).hasClass('regenerate')){
+	          // remove it from our array
+	          var index = cardsinplay.indexOf(discardid[1])
+	          if (index > -1) {
+	            cardsinplay.splice(index, 1);
+	          }
+	          // remove the card from the ui
+	          $('#taco-number-'+discardid[1]).css('display', 'none');
+	          if (removetype != 'score'){
+		          // add the card to the list of discarded cards
+		          $('#taco-discarded-number-'+discardid[1]).css('display', 'block');
+		        }
+	          // replace the cards in play hidden field's value with the updated list
+	          $('#cardsinplay').val(cardsinplay);
           }
-          // remove the card from the ui
-          $('#taco-number-'+discardid[1]).css('display', 'none');
-          // add the card to the list of discarded cards
-          $('#taco-discarded-number-'+discardid[1]).css('display', 'block');
-          // replace the cards in play hidden field's value with the updated list
-          $('#cardsinplay').val(cardsinplay);
+          // if we're scoring, do extra stuff
+          if (removetype == 'score'){
+          	// pull out the points from the card
+          	var pointsscored = $('#points-' + discardid[1]).val();
+	          // add the card to the list of scored cards
+	          $('#taco-scored-number-'+discardid[1]+' .score').html(pointsscored);
+	          var thistitle = $(discardcardid + ' .cardtitle').html();
+	          var scoredstring = '<li id="taco-scored-number-'+discardid[1]+'">' + thistitle + ' - ' + pointsscored + 'pts</li>';
+	          $('.scored .cardlist').append(scoredstring);
+	          // get the current points total
+	          var currentpts = Number($('.pointsnuber').html());
+	          // add the taco points scored
+	          currentpts += Number(pointsscored);
+	          // return the value to the hidden form element
+	          $('.pointsnuber').html(currentpts);
+        	}
+        }
+        // DISCARD A CARD ------------------------------------------------------
+        $('a.discard').click(function(){
+        	removecard(this,'discard');
         });
         // SCORE A CARD ----------------------------------------------------------
         $('a.score').click(function(){
-          var cardsinplay = $('#cardsinplay').val();
-          // get the cards in play into an array
-          var cardsinplay = $('#cardsinplay').val().split(',');
-          // pull out the card number from the id
-          var scoreid = $(this).attr('id').split('-');
-          // pull out the points from the card
-          var pointsscored = $('#points-' + scoreid[1]).val();
-          // remove it from our array
-          var index = cardsinplay.indexOf(scoreid[1])
-          if (index > -1) {
-            cardsinplay.splice(index, 1);
-          }
-          // remove the card from the ui
-          $('#taco-number-'+scoreid[1]).css('display', 'none');
-          // add the card to the list of scored cards
-          $('#taco-scored-number-'+scoreid[1]).css('display', 'block');
-          // add points scored in the item in scored listing
-          $('#taco-scored-number-'+scoreid[1]+' .score').html(pointsscored);
-          // replace the cards in play hidden field's value with the updated list
-          $('#cardsinplay').val(cardsinplay);
-          //update total points
-          var currentpts = Number($('.pointsnuber').html());
-          currentpts += Number(pointsscored);
-          $('.pointsnuber').html(currentpts);
+        	removecard(this,'score');
         });
       });
       var tacodata = {"tacos":[
@@ -190,6 +264,7 @@
         {"title":"Counter-Strike","number":64,"type":"Annihilation","description":"The foe seeks to circumvent our defences by landing troops amidst our ranks. Show them the folly of their ways.","scoring":"Score 1 Victory Point at the end of your turn if at least one enemy unit that arrived from Deep Strike Reserve was completely destroyed during your turn. If 3 or more enemy units that arrived from Deep Strike Reserve were completely destroyed during your turn, score D3 Victory Points instead."},
         {"title":"Stronghold Denial","number":65,"type":"Annihilation","description":"If the enemy should seek to capture a stronghold, reduce it to rubble and rob the foe of his prize","scoring":"Score 1 Victory Point at the end of your turn if at least one building was destroyed during your turn. If 3 or more buildings were destroyed during your turn, score D3 Victory Points instead."},
         {"title":"Big Game Hunter","number":66,"type":"Annihilation","description":"The larger the foe, the greater the glory...","scoring":"Score 1 Victory Point at the end of your turn if at least one enemy Vehicle or Monstrous Creature was destroyed during your turn. If at least one enemy Super-heavy vehicle or Gargantuan Creature was destroyed during your turn, score D3 Victory Points instead."},
+        
       ]};
       //alert(tacodata["tacos"][0]["title"]);
       var objTacoApp = angular.module("TacoApp", []);
@@ -209,7 +284,10 @@
       objTacoApp.controller('TacoController', ['$scope', '$http', '$sce',
         function ($scope, $http, $sce) {
           $scope.tacos = tacodata.tacos;
-        }
+          $scope.computedtype = function(uncomputedtype){
+          	return uncomputedtype.replace(/\W/g, '')
+          }
+        }        
       ]);
     </script>
   </head>
@@ -231,21 +309,21 @@
         <h2>Game Options</h2>
         <div class="option">
           <label>Start with a specific Tactical Objective:</label>
-          <select name="optionselect" id="optionselect">
+          <select name="specificstart" id="specificstart">
             <option value="none" selected="selected">None</option>
             <option data-ng-repeat="thisTaco in tacos | orderBy:['role','number']" value="{{thisTaco.number}}">
-              {{thisTaco.title}}
+              {{thisTaco.number}} - {{thisTaco.title}}
             </option>
           </select>
         </div>
         <div class="option">
-          <input type="checkbox" name="hold" id="hold" value="false"/> <label>Regenerate this Objective every turn?</label>
+          <input type="checkbox" name="hold" id="hold" value="false" disabled/> <label class="gameoptioncheck" for="hold">Regenerate this Objective every turn?</label>
         </div>
         <div class="option">
-          <input type="checkbox" name="objectivesonly" value="objectivesonly"> <label>Remove all but Capture &amp; Control, Take &amp; Hold, and Storm &amp; Defend Tactical Objectives</label>
+          <input type="checkbox" name="objectivesonly" id="objectivesonly" value="false"> <label class="gameoptioncheck" for="objectivesonly">Remove all but Capture &amp; Control, Take &amp; Hold, and Storm &amp; Defend Tactical Objectives</label>
         </div>     
         <div class="option">
-          <input type="checkbox" name="doubleobjectives" value="objectivesonly"> <label>Double the points of all Capture &amp; Control, Take &amp; Hold, and Storm &amp; Defend Tactical Objectives</label>
+          <input type="checkbox" name="doubleobjectives" id="doubleobjectives" value="false"> <label class="gameoptioncheck" for="doubleobjectives">Double the points of all Capture &amp; Control, Take &amp; Hold, and Storm &amp; Defend Tactical Objectives</label>
         </div>     
         <div class="option">
           <ul>
@@ -268,14 +346,14 @@
         <h2>Card pool:</h2>
         <h3>Active:</h3>
         <ul class="cardlist">
-          <li class="card" data-ng-repeat="thisTaco in tacos | orderBy:['role','number']" id="taco-number-{{thisTaco.number}}">
+          <li class="card {{::computedtype(thisTaco.type)}}" data-ng-repeat="thisTaco in tacos | orderBy:['role','number']" id="taco-number-{{thisTaco.number}}">
             <h4 class="cardtitle">{{thisTaco.number}} - {{thisTaco.title}}</h3>
             <p class="cardtype">{{thisTaco.type}}</p>
             <p class="carddescription">{{thisTaco.description}}</p>            
             <p class="cardscoring">{{thisTaco.scoring}}</p>
             <div class="option">
-              <label>Points:</label>
-              <select name="points-{{thisTaco.number}}" id="points-{{thisTaco.number}}">
+              <label for="points-{{thisTaco.number}}">Points:</label>
+              <select class="pointsselect" name="points-{{thisTaco.number}}" id="points-{{thisTaco.number}}">
                 <option value="1">1</option>
                 <option value="2">2</option>
                 <option value="3">3</option>
@@ -292,7 +370,7 @@
           <div class="scored">
             <h3>Scored:</h3>
             <ul class="cardlist">
-              <li data-ng-repeat="thisTaco in tacos | orderBy:['role','number']" id="taco-scored-number-{{thisTaco.number}}">{{thisTaco.number}} - {{thisTaco.title}} - <span class="score"></span>pts</li>
+              <!--li data-ng-repeat="thisTaco in tacos | orderBy:['role','number']" id="taco-scored-number-{{thisTaco.number}}">{{thisTaco.number}} - {{thisTaco.title}} - <span class="score"></span>pts</li-->
             </ul>
           </div>
           <div class="discarded">
@@ -308,5 +386,6 @@
     <!-- To keep track of cards that are no longer in the deck -->
     <input type="hidden" value="" id="cardsused" name="cardsused">
     <input type="hidden" value="" id="cardsinplay" name="cardsinplay">
+    <input type="hidden" value="36" id="cardcount" name="cardcount">
   </body>
 </html>
