@@ -20,7 +20,7 @@
       a.discard {position:absolute;top:10px;right:10px;}
       a.shuffle {margin-left:10px;}
       .points {position:absolute;top:20px;right:20px;font-size:21px;font-weight:bold;padding:10px;border:2px solid #333;background-color:#ccc;color:#333;border-radius:5px;}
-      .card, .discarded .cardlist li, .brandnewgame, .yousure {display:none;}
+      .card, .discarded .cardlist li, .cod-setup, .brandnewgame, .yousure {display:none;}
       .disabled, a.disabled:hover {background-color:#ccc;color:#999;cursor:default;border-color:#999;}
       .gameoptioncheck:hover {cursor:pointer;}
       .yousure {position:fixed; top:25%;left:23%;bottom:50%;right:50%;border:2px solid #333; padding:30px;border-radius:10px;background-color:#fff;width:50%;height:300px;text-align:center;padding-top:75px;}
@@ -98,6 +98,9 @@
 	          }
 	          // reduce the max card count
 	          $('#cardcount').val(Number($('#cardcount').val())-1);
+	          if (usedset=='cod'){
+	          	$('.cod-setup').css('display', 'block');
+	          }
           }
           // set the card count to 18 if you are only using objective missions
           if ($('#objectivesonly').is(':checked')){
@@ -408,8 +411,10 @@
         </div>
       </div>
       <div class="optionselect">
-        <h2>Cities of Death Setup</h2>
-        <p>Place at least 6 buildings or cities on the battlefield. When the players place objectives, they place 6, each numbered (1-6), and each placed in a different building or ruin.</p>
+      	<div class="cod-setup">
+	        <h2>Cities of Death Setup</h2>
+	        <p>Place at least 6 buildings or cities on the battlefield. When the players place objectives, they place 6, each numbered (1-6), and each placed in a different building or ruin.</p>
+        </div>
         <h2>Game Options</h2>
         <div class="option">
           <label>Start with a specific Tactical Objective:</label>
