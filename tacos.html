@@ -27,7 +27,9 @@
       .yousure ul li a {margin-left:auto;margin-right:auto;}
       .startno, .startyes {margin-top:10%;}
       .startyes {width:20%;}
-
+			.regenerate {background-color:#efefef;}
+			.regenerate .discard {display:none;}
+			
 
       body.kdk-tacodeck {background-color:#D89F9F;}
       body.kdk-tacodeck .deckselecthtml {color:#600;}
@@ -87,8 +89,6 @@
           	// unhide the taco card
 	          var tacosshow = "." + usedset + ".taco-number-" + specificstart;
 	          $(tacosshow).css('display', 'inline-block');  
-	          $(tacosshow + ' .discard').css('display', 'none');
-	          $(tacosshow).css('background-color','#eeeeee');
 	          // Add to the cards used and cards in play hidden form elements
 	          $('#cardsused').val(specificstart);
 	          $('#cardsinplay').val(specificstart);
@@ -98,9 +98,10 @@
 	          }
 	          // reduce the max card count
 	          $('#cardcount').val(Number($('#cardcount').val())-1);
-	          if (usedset=='cod'){
-	          	$('.cod-setup').css('display', 'block');
-	          }
+          }
+          // show Cities of Death stuff
+          if (usedset=='cod'){
+          	$('.cod-setup').css('display', 'block');
           }
           // set the card count to 18 if you are only using objective missions
           if ($('#objectivesonly').is(':checked')){
