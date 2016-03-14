@@ -1,9 +1,9 @@
  <!DOCTYPE html>
 <html>
   <head>
-    <title>Page Title</title>
+    <title>Everyone Likes TacOs!</title>
     <style type="text/css">
-      body {font-family:arial,verdana,sans-serif;color:#333;background-color:#ffe;}
+      body {font-family:arial,verdana,sans-serif;color:#333;}
       div, ul, li, p {position:relative;display:block;}
       a {display:block;padding:10px;font-size:16px;background-color:#777;color:#fff;cursor:pointer;border:2px solid #333;border-radius:6px;text-align:center;text-transform:uppercase;font-weight:bold;}
       a:hover {color:#777;background-color:#fff;}
@@ -20,9 +20,24 @@
       a.discard {position:absolute;top:10px;right:10px;}
       a.shuffle {margin-left:10px;}
       .points {position:absolute;top:20px;right:20px;font-size:21px;font-weight:bold;padding:10px;border:2px solid #333;background-color:#ccc;color:#333;border-radius:5px;}
-      .card, .discarded .cardlist li {display:none;}
+      .card, .discarded .cardlist li, .brandnewgame, .yousure {display:none;}
       .disabled, a.disabled:hover {background-color:#ccc;color:#999;cursor:default;border-color:#999;}
       .gameoptioncheck:hover {cursor:pointer;}
+      .yousure {position:fixed; top:25%;left:23%;bottom:50%;right:50%;border:2px solid #333; padding:30px;border-radius:10px;background-color:#fff;width:50%;height:300px;text-align:center;padding-top:75px;}
+      .yousure ul li a {margin-left:auto;margin-right:auto;}
+      .startno, .startyes {margin-top:10%;}
+      .startyes {width:20%;}
+
+
+      body.kdk-tacodeck {background-color:#D89F9F;}
+      body.kdk-tacodeck .deckselecthtml {color:#600;}
+      
+      body.cod-tacodeck {background-color:#DEDEDE;}
+      body.cod-tacodeck .deckselecthtml {color:#666;}
+      
+      body.ork-tacodeck {background-color:#95CC95;}
+      body.ork-tacodeck .deckselecthtml {color:#060;}
+
     </style>
     <script type="text/javascript" language="javascript">
       /*! jQuery v1.12.1 | (c) jQuery Foundation | jquery.org/license */
@@ -47,20 +62,29 @@
 
         // START A NEW GAME -----------------------------------------------------
         $('.newgame a').click(function() {
+					// get the set we are using
+			    var usedset = $('#deckselect').val();
+			    // assign to body tag
+			    $('body').addClass(usedset + '-tacodeck');
+			    // assign to the title
+			    var deckselecthtml = $('#deckselect option[value=\'' + usedset + '\']').text();
+			    $('.deckselecthtml').html(deckselecthtml);
+			    // disappear/reappear			    
           $('.newgame').css('display', 'none');
           $('.optionselect').css('display', 'block');
+          $('.brandnewgame').css('display', 'block');
         });
 
         // SELECT GAME OPTIONS -------------------------------------------------
         $('.optionselect a').click(function() {
           $('.optionselect').css('display', 'none');
           $('.generator, .pool, .shuffle').css('display', 'block');
-          // check for starter card
+					// get the set we are using
+			    var usedset = $('#deckselect').val();
+			    // check for starter card
           var specificstart = $('#specificstart').val();
           if (specificstart != "none"){          	
-          	// get the set we are using
-			      var usedset = $('#deckselect').val();
-	          // unhide the taco card
+          	// unhide the taco card
 	          var tacosshow = "." + usedset + ".taco-number-" + specificstart;
 	          $(tacosshow).css('display', 'inline-block');   
 	          // Add to the cards used and cards in play hidden form elements
@@ -232,6 +256,16 @@
         $('a.score').click(function(){
         	removecard(this,'score');
         });
+        // START FRESH
+        $('a.newgamestart').click(function(){
+          $('.yousure').css('display', 'block');
+        });
+        $('.startno').click(function(){
+          $('.yousure').css('display', 'none');
+        });
+        $('.startyes').click(function(){
+          location.reload();
+        });
       });
       var tacodata = {"tacos":[
 
@@ -241,36 +275,36 @@
         {"title":"Secure Objective 4",		"number":14,    "type":"Capture & Control",  "description":"A vital objective has been identified in your vicinity. You are ordered to hold it at any cost.",   				 	     "scoring":"Score 1 Victory Point if you control Objective Marker 4 at the end of your turn.","set":"std"},
         {"title":"Secure Objective 5",		"number":15,    "type":"Capture & Control",  "description":"A vital objective has been identified in your vicinity. You are ordered to hold it at any cost.",   				 	     "scoring":"Score 1 Victory Point if you control Objective Marker 5 at the end of your turn.","set":"std"},
         {"title":"Secure Objective 6",		"number":16,    "type":"Capture & Control",  "description":"A vital objective has been identified in your vicinity. You are ordered to hold it at any cost.",   				 	     "scoring":"Score 1 Victory Point if you control Objective Marker 6 at the end of your turn.","set":"std"},
-        {"title":"Secure Objective 1",		"number":21,    "type":"Take & Hold",        "description":"A vital objective has been identified in your vicinity. You are ordered to hold it at any cost.",    				 	     "scoring":"Score 1 Victory Point if you control Objective Marker 1 at the end of your turn.","set":"std ork"},
-        {"title":"Secure Objective 2",		"number":22,    "type":"Take & Hold",        "description":"A vital objective has been identified in your vicinity. You are ordered to hold it at any cost.",  				 	       "scoring":"Score 1 Victory Point if you control Objective Marker 2 at the end of your turn.","set":"std ork"},
-        {"title":"Secure Objective 3",		"number":23,    "type":"Take & Hold",        "description":"A vital objective has been identified in your vicinity. You are ordered to hold it at any cost.",    				 	     "scoring":"Score 1 Victory Point if you control Objective Marker 3 at the end of your turn.","set":"std ork"},
-        {"title":"Secure Objective 4",		"number":24,    "type":"Take & Hold",        "description":"A vital objective has been identified in your vicinity. You are ordered to hold it at any cost.", 				 	       "scoring":"Score 1 Victory Point if you control Objective Marker 4 at the end of your turn.","set":"std ork"},
-        {"title":"Secure Objective 5",		"number":25,    "type":"Take & Hold",        "description":"A vital objective has been identified in your vicinity. You are ordered to hold it at any cost.",  				 	       "scoring":"Score 1 Victory Point if you control Objective Marker 5 at the end of your turn.","set":"std ork"},
-        {"title":"Secure Objective 6",		"number":26,    "type":"Take & Hold",        "description":"A vital objective has been identified in your vicinity. You are ordered to hold it at any cost.",  				 	       "scoring":"Score 1 Victory Point if you control Objective Marker 6 at the end of your turn.","set":"std ork"},
-        {"title":"Secure Objective 1",		"number":31,    "type":"Storm & Defend",     "description":"A vital objective has been identified in your vicinity. You are ordered to hold it at any cost.",  				 	       "scoring":"Score 1 Victory Point if you control Objective Marker 1 at the end of your turn.","set":"std ork"},
-        {"title":"Secure Objective 2",		"number":32,    "type":"Storm & Defend",     "description":"A vital objective has been identified in your vicinity. You are ordered to hold it at any cost.", 				 	       "scoring":"Score 1 Victory Point if you control Objective Marker 2 at the end of your turn.","set":"std ork"},
-        {"title":"Secure Objective 3",		"number":33,    "type":"Storm & Defend",     "description":"A vital objective has been identified in your vicinity. You are ordered to hold it at any cost.", 				 	       "scoring":"Score 1 Victory Point if you control Objective Marker 3 at the end of your turn.","set":"std ork"},
-        {"title":"Secure Objective 4",		"number":34,    "type":"Storm & Defend",     "description":"A vital objective has been identified in your vicinity. You are ordered to hold it at any cost.",    				 	     "scoring":"Score 1 Victory Point if you control Objective Marker 4 at the end of your turn.","set":"std ork"},
-        {"title":"Secure Objective 5",		"number":35,    "type":"Storm & Defend",     "description":"A vital objective has been identified in your vicinity. You are ordered to hold it at any cost.",        				 	 "scoring":"Score 1 Victory Point if you control Objective Marker 5 at the end of your turn.","set":"std ork"},
-        {"title":"Secure Objective 6",		"number":36,    "type":"Storm & Defend",     "description":"A vital objective has been identified in your vicinity. You are ordered to hold it at any cost.",       					 		"scoring":"Score 1 Victory Point if you control Objective Marker 6 at the end of your turn.","set":"std ork"},
-        {"title":"Recon",									"number":41,    "type":"Seize Ground",       "description":"You must locate and assess the value of local battlefield objectives so your forces can be tactically deployed.",   	"scoring":"If the mission has the Mysterious Objectives mission special rule, score 1 Victory point if every objective on the battlefield has been identified at the end of this, or any previous turn.","set":"std ork"},
-        {"title":"Behind Enemy Lines",		"number":42,    "type":"Seize Ground",       "description":"Break through the foe's army and cut off his lines of escape.", 																	 						        "scoring":"Score 1 Victory Point if one of your scoring units is within 12\" of your opponent's table edge at the end of your turn. If 3 or more of your scoring units are within 12\" of your opponent's table edge at the end of your turn, score D3 Victory Points instead.","set":"std ork"},
-        {"title":"Hold the Line",					"number":43,    "type":"Seize Ground",       "description":"It is critical that no foe breaks through your defences. Maintain a strong rearguard to protect your supply lines.",  "scoring":"Score 1 Victory Point if at least 3 of your scoring units and none of your opponent's scoring units are within 12\" of your own table edge at the end of your turn.","set":"std ork"},
-        {"title":"Ascendency",						"number":44,    "type":"Seize Ground",       "description":"The battleground is won one yard at a time. Continue to establish a strong military presence in the area.",        		"scoring":"Score D3 Victory Points if you control any three Objective Markers at the end of your turn.","set":"std ork"},
-        {"title":"Supremacy",							"number":45,    "type":"Seize Ground",       "description":"The enemy is attempting to establish a foothold in this region. Redouble your efforts to maintain control.",       		"scoring":"Score D3 Victory Points if you control at least two Objective Markers and at least twice as many Objective Markers as your opponent controls at the end of your turn.","set":"std ork"},
-        {"title":"Domination",						"number":46,    "type":"Seize Ground",       "description":"Dominate the field of battle. Storm every site of tactical import and leave the foe with no place to hide.",        	"scoring":"Score D3+3 Victory Points if you control every Objective Marker on the table at the end of your turn.","set":"std ork"},
-        {"title":"Overwhelming Firepower","number":51,    "type":"Purge",              "description":"A show of strength is required. Scour the enemy from the face of the battlefield with the use of extreme firepower.", "scoring":"Score 1 Victory Point if an enemy unit was completely destroyed during the Shooting phase of your turn. If you completely destroyed 3 or more enemy units during the Shooting phase of your turn, score D3 Victory Points instead.","set":"std ork"},
-        {"title":"Blood and Guts",				"number":52,    "type":"Purge",              "description":"Close with the foe and engage them in hand-to-hand combat. Show them no quarter, no mercy.",       									  "scoring":"Score 1 Victory Point if an enemy unit was completely destroyed during Assault Phase. If 3 or more destroyed during your Assault Phase, score D3 Victory Points instead.","set":"std ork"},
-        {"title":"No Prisoners",					"number":53,    "type":"Purge",              "description":"Exterminate your enemy, show them no mercy.",       																																  "scoring":"Score 1 Victory Point if an enemy unit was completely destroyed during your turn. If you completely destroyed between 3 and 5 enemy units during your turn, score D3 Victory Points instead. If you completely destroyed 6 or more enemy units during your turn, score D3+3 Victory Points instead.","set":"std ork"},
-        {"title":"Hungry for Glory",			"number":54,    "type":"Purge",              "description":"You fight not only for victory, but for honour as well. Let none dispute your skills on the field of battle.",        "scoring":"Score 1 Victory Point if you issued a challenge during your turn. If you issued 3 or more challenges during your turn, score D3 Victory Points instead.","set":"std ork"},
-        {"title":"Psychological Warfare",	"number":55,    "type":"Purge",              "description":"Break the enemy's morale, make your foes tremble before you.",     																									  "scoring":"Score 1 Victory Point if your opponent failed a Morale, Pinning or Fear test during this turn. If your opponent failed 3 or more Morale, Pinning or Fear tests, score D3 Victory Points instead.","set":"std ork"},
-        {"title":"Harness the Warp",			"number":56,    "type":"Purge",              "description":"Desperate times call for desperate measures – harness the power of the Warp to defeat your foes.",        						"scoring":"Score 1 Victory Point if you successfully manifested a Psychic Power during your turn. If you successfully manifested 3 or more Psychic Powers, score D3 Victory Points instead.","set":"std ork"},
-        {"title":"Kingslayer",						"number":61,    "type":"Annihilation",       "description":"The enemy commander is a powerful and effective leader and should be slain as quickly as possible. ",        					"scoring":"Score D3 Victory Points at the end of your turn if your opponent's Warlord has been removed as a casualty during this, or any previous turn.","set":"std ork"},
-        {"title":"Witch Hunter",					"number":62,    "type":"Annihilation",       "description":"The presence of enemy psykers can no longer be tolerated. Eliminate them with extreme prejudice.",        						"scoring":"Score 1 Victory Point at the end of your turn if at least one enemy unit with the Psyker, Psychic Pilot or Brotherhood of Psykers/Sorcerers special rule was completely destroyed during your turn.","set":"std ork"},
-        {"title":"Scour the Skies",				"number":63,    "type":"Annihilation",       "description":"It is vital to maintain air superiority. Enemy aircraft are to be considered targets of high priority.",        			"scoring":"Score 1 Victory Point at the end of your turn if at least one enemy Flyer or Flying Monstrous Creature was removed as a casualty during your turn.","set":"std ork"},
-        {"title":"Assassinate",						"number":64,    "type":"Annihilation",       "description":"The enemy looks to their champions for courage. Identify and assassinate them.",      														    "scoring":"Score 1 Victory Point at the end of your turn if at least one enemy character was removed as a casualty during your turn. If 3 or more enemy characters were removed as casualties during your turn, score D3 Victory Points instead.","set":"std ork"},
-        {"title":"Demolitions",						"number":65,    "type":"Annihilation",       "description":"Score 1 Victory Point at the end of your turn if at least one gun emplacement or enemy building was destroyed during your turn. If at least one enemy building with the Mighty Bulwark special rule was destroyed during your turn, score D3 Victory Points instead.","set":"std ork"},
-        {"title":"Big Game Hunter",				"number":66,    "type":"Annihilation",       "description":"The larger the foe, the greater the glory...",        "scoring":"Score 1 Victory Point at the end of your turn if at least one enemy Vehicle or Monstrous Creature was destroyed during your turn. If at least one enemy Super-heavy vehicle or Gargantuan Creature was destroyed during your turn, score D3 Victory Points instead.","set":"std ork"},
+        {"title":"Secure Objective 1",		"number":21,    "type":"Take & Hold",        "description":"A vital objective has been identified in your vicinity. You are ordered to hold it at any cost.",    				 	     "scoring":"Score 1 Victory Point if you control Objective Marker 1 at the end of your turn.","set":"std ork kdk"},
+        {"title":"Secure Objective 2",		"number":22,    "type":"Take & Hold",        "description":"A vital objective has been identified in your vicinity. You are ordered to hold it at any cost.",  				 	       "scoring":"Score 1 Victory Point if you control Objective Marker 2 at the end of your turn.","set":"std ork kdk"},
+        {"title":"Secure Objective 3",		"number":23,    "type":"Take & Hold",        "description":"A vital objective has been identified in your vicinity. You are ordered to hold it at any cost.",    				 	     "scoring":"Score 1 Victory Point if you control Objective Marker 3 at the end of your turn.","set":"std ork kdk"},
+        {"title":"Secure Objective 4",		"number":24,    "type":"Take & Hold",        "description":"A vital objective has been identified in your vicinity. You are ordered to hold it at any cost.", 				 	       "scoring":"Score 1 Victory Point if you control Objective Marker 4 at the end of your turn.","set":"std ork kdk"},
+        {"title":"Secure Objective 5",		"number":25,    "type":"Take & Hold",        "description":"A vital objective has been identified in your vicinity. You are ordered to hold it at any cost.",  				 	       "scoring":"Score 1 Victory Point if you control Objective Marker 5 at the end of your turn.","set":"std ork kdk"},
+        {"title":"Secure Objective 6",		"number":26,    "type":"Take & Hold",        "description":"A vital objective has been identified in your vicinity. You are ordered to hold it at any cost.",  				 	       "scoring":"Score 1 Victory Point if you control Objective Marker 6 at the end of your turn.","set":"std ork kdk"},
+        {"title":"Secure Objective 1",		"number":31,    "type":"Storm & Defend",     "description":"A vital objective has been identified in your vicinity. You are ordered to hold it at any cost.",  				 	       "scoring":"Score 1 Victory Point if you control Objective Marker 1 at the end of your turn.","set":"std ork kdk"},
+        {"title":"Secure Objective 2",		"number":32,    "type":"Storm & Defend",     "description":"A vital objective has been identified in your vicinity. You are ordered to hold it at any cost.", 				 	       "scoring":"Score 1 Victory Point if you control Objective Marker 2 at the end of your turn.","set":"std ork kdk"},
+        {"title":"Secure Objective 3",		"number":33,    "type":"Storm & Defend",     "description":"A vital objective has been identified in your vicinity. You are ordered to hold it at any cost.", 				 	       "scoring":"Score 1 Victory Point if you control Objective Marker 3 at the end of your turn.","set":"std ork kdk"},
+        {"title":"Secure Objective 4",		"number":34,    "type":"Storm & Defend",     "description":"A vital objective has been identified in your vicinity. You are ordered to hold it at any cost.",    				 	     "scoring":"Score 1 Victory Point if you control Objective Marker 4 at the end of your turn.","set":"std ork kdk"},
+        {"title":"Secure Objective 5",		"number":35,    "type":"Storm & Defend",     "description":"A vital objective has been identified in your vicinity. You are ordered to hold it at any cost.",        				 	 "scoring":"Score 1 Victory Point if you control Objective Marker 5 at the end of your turn.","set":"std ork kdk"},
+        {"title":"Secure Objective 6",		"number":36,    "type":"Storm & Defend",     "description":"A vital objective has been identified in your vicinity. You are ordered to hold it at any cost.",       					 		"scoring":"Score 1 Victory Point if you control Objective Marker 6 at the end of your turn.","set":"std ork kdk"},
+        {"title":"Recon",									"number":41,    "type":"Seize Ground",       "description":"You must locate and assess the value of local battlefield objectives so your forces can be tactically deployed.",   	"scoring":"If the mission has the Mysterious Objectives mission special rule, score 1 Victory point if every objective on the battlefield has been identified at the end of this, or any previous turn.","set":"std ork kdk"},
+        {"title":"Behind Enemy Lines",		"number":42,    "type":"Seize Ground",       "description":"Break through the foe's army and cut off his lines of escape.", 																	 						        "scoring":"Score 1 Victory Point if one of your scoring units is within 12\" of your opponent's table edge at the end of your turn. If 3 or more of your scoring units are within 12\" of your opponent's table edge at the end of your turn, score D3 Victory Points instead.","set":"std ork kdk"},
+        {"title":"Hold the Line",					"number":43,    "type":"Seize Ground",       "description":"It is critical that no foe breaks through your defences. Maintain a strong rearguard to protect your supply lines.",  "scoring":"Score 1 Victory Point if at least 3 of your scoring units and none of your opponent's scoring units are within 12\" of your own table edge at the end of your turn.","set":"std ork kdk"},
+        {"title":"Ascendency",						"number":44,    "type":"Seize Ground",       "description":"The battleground is won one yard at a time. Continue to establish a strong military presence in the area.",        		"scoring":"Score D3 Victory Points if you control any three Objective Markers at the end of your turn.","set":"std ork kdk"},
+        {"title":"Supremacy",							"number":45,    "type":"Seize Ground",       "description":"The enemy is attempting to establish a foothold in this region. Redouble your efforts to maintain control.",       		"scoring":"Score D3 Victory Points if you control at least two Objective Markers and at least twice as many Objective Markers as your opponent controls at the end of your turn.","set":"std ork kdk"},
+        {"title":"Domination",						"number":46,    "type":"Seize Ground",       "description":"Dominate the field of battle. Storm every site of tactical import and leave the foe with no place to hide.",        	"scoring":"Score D3+3 Victory Points if you control every Objective Marker on the table at the end of your turn.","set":"std ork kdk"},
+        {"title":"Overwhelming Firepower","number":51,    "type":"Purge",              "description":"A show of strength is required. Scour the enemy from the face of the battlefield with the use of extreme firepower.", "scoring":"Score 1 Victory Point if an enemy unit was completely destroyed during the Shooting phase of your turn. If you completely destroyed 3 or more enemy units during the Shooting phase of your turn, score D3 Victory Points instead.","set":"std ork kdk"},
+        {"title":"Blood and Guts",				"number":52,    "type":"Purge",              "description":"Close with the foe and engage them in hand-to-hand combat. Show them no quarter, no mercy.",       									  "scoring":"Score 1 Victory Point if an enemy unit was completely destroyed during Assault Phase. If 3 or more destroyed during your Assault Phase, score D3 Victory Points instead.","set":"std ork kdk"},
+        {"title":"No Prisoners",					"number":53,    "type":"Purge",              "description":"Exterminate your enemy, show them no mercy.",       																																  "scoring":"Score 1 Victory Point if an enemy unit was completely destroyed during your turn. If you completely destroyed between 3 and 5 enemy units during your turn, score D3 Victory Points instead. If you completely destroyed 6 or more enemy units during your turn, score D3+3 Victory Points instead.","set":"std ork kdk"},
+        {"title":"Hungry for Glory",			"number":54,    "type":"Purge",              "description":"You fight not only for victory, but for honour as well. Let none dispute your skills on the field of battle.",        "scoring":"Score 1 Victory Point if you issued a challenge during your turn. If you issued 3 or more challenges during your turn, score D3 Victory Points instead.","set":"std ork kdk"},
+        {"title":"Psychological Warfare",	"number":55,    "type":"Purge",              "description":"Break the enemy's morale, make your foes tremble before you.",     																									  "scoring":"Score 1 Victory Point if your opponent failed a Morale, Pinning or Fear test during this turn. If your opponent failed 3 or more Morale, Pinning or Fear tests, score D3 Victory Points instead.","set":"std ork kdk"},
+        {"title":"Harness the Warp",			"number":56,    "type":"Purge",              "description":"Desperate times call for desperate measures – harness the power of the Warp to defeat your foes.",        						"scoring":"Score 1 Victory Point if you successfully manifested a Psychic Power during your turn. If you successfully manifested 3 or more Psychic Powers, score D3 Victory Points instead.","set":"std ork kdk"},
+        {"title":"Kingslayer",						"number":61,    "type":"Annihilation",       "description":"The enemy commander is a powerful and effective leader and should be slain as quickly as possible. ",        					"scoring":"Score D3 Victory Points at the end of your turn if your opponent's Warlord has been removed as a casualty during this, or any previous turn.","set":"std ork kdk"},
+        {"title":"Witch Hunter",					"number":62,    "type":"Annihilation",       "description":"The presence of enemy psykers can no longer be tolerated. Eliminate them with extreme prejudice.",        						"scoring":"Score 1 Victory Point at the end of your turn if at least one enemy unit with the Psyker, Psychic Pilot or Brotherhood of Psykers/Sorcerers special rule was completely destroyed during your turn.","set":"std ork kdk"},
+        {"title":"Scour the Skies",				"number":63,    "type":"Annihilation",       "description":"It is vital to maintain air superiority. Enemy aircraft are to be considered targets of high priority.",        			"scoring":"Score 1 Victory Point at the end of your turn if at least one enemy Flyer or Flying Monstrous Creature was removed as a casualty during your turn.","set":"std ork kdk"},
+        {"title":"Assassinate",						"number":64,    "type":"Annihilation",       "description":"The enemy looks to their champions for courage. Identify and assassinate them.",      														    "scoring":"Score 1 Victory Point at the end of your turn if at least one enemy character was removed as a casualty during your turn. If 3 or more enemy characters were removed as casualties during your turn, score D3 Victory Points instead.","set":"std ork kdk"},
+        {"title":"Demolitions",						"number":65,    "type":"Annihilation",       "description":"Score 1 Victory Point at the end of your turn if at least one gun emplacement or enemy building was destroyed during your turn. If at least one enemy building with the Mighty Bulwark special rule was destroyed during your turn, score D3 Victory Points instead.","set":"std ork kdk"},
+        {"title":"Big Game Hunter",				"number":66,    "type":"Annihilation",       "description":"The larger the foe, the greater the glory...",        "scoring":"Score 1 Victory Point at the end of your turn if at least one enemy Vehicle or Monstrous Creature was destroyed during your turn. If at least one enemy Super-heavy vehicle or Gargantuan Creature was destroyed during your turn, score D3 Victory Points instead.","set":"std ork kdk"},
 
         {"title":"Secure Building 1",		"number":11,    "type":"Capture & Control",  "description":"A vital objective has been identified in your vicinity. You are ordered to hold it at any cost.",                         "scoring":"Score 1 Victory Point if you control Objective Marker 1 at the end of your turn.","set":"cod"},
         {"title":"Secure Building 2",		"number":12,    "type":"Capture & Control",  "description":"A vital objective has been identified in your vicinity. You are ordered to hold it at any cost.",                         "scoring":"Score 1 Victory Point if you control Objective Marker 2 at the end of your turn.","set":"cod"},
@@ -316,6 +350,13 @@
         {"title":"GRAB DA LOOT!",					"number":15,    "type":"Orks",  "description":"There's loads of gubbinz to loot, but if you don't get it soon some other thievin' git will nick it.",    "scoring":"Roll a D6 when this Tactical Objective is generated. Score 1 Victory Point at the end of your turn if you control the Objective Marker whose number corresponds to the D6 result.",						"set":"ork"},
         {"title":"ERE WE GO! WAAAGH!",		"number":16,    "type":"Orks",  "description":"Time to show this cowardly bunch of pansies that Orks is da best. Waaagh!",   											 	     "scoring":"Score 1 Victory Point at the end of your turn if, during that turn, you successfully charged an enemy unit with an Ork unit and the dice rolled for its charge distance was 10 or more (before modifiers). If, during your turn, 3 or more Ork units did this, score D3 Victory Points instead. Note that the Ork units do not need to move the full distance rolled to score this Tactical Objective.",						"set":"ork"},
 
+        {"title":"Khorne Cares Not",				 	  "number":11,    "type":"Khorne Daemonkin",  "description":"Friend or foe, crazed follower or craven unbliever, the Lord of Rage cares only that they bleed.",   				 	     																		 																																												"scoring":"Score 1 Victory Point at the end of your turn if at least one unit (friend or foe) was completely destroyed during vow turn. if 3-5 units (friend or (oe) were completely destroyed, score D3 Victory Points instead. If 6 or more units (friend or foe) were completely destroyed, score D3+3 Victory Points instead. ",						"set":"kdk"},
+        {"title":"Alter of Gore",				 	  		"number":12,    "type":"Khorne Daemonkin",  "description":"Lesser forces might look to seize strategic locations; true warriors seek only to daub them in blood and bury them in the corpses of the unworthy. ",   																																												"scoring":"Score 1 Victory Point at the end of your turn if at least one enemy unit that was controlling an Objective Marker at the start of your turn was completely destroyed. If, additionally, one of your units is controlling that Objective Marker at the end of your turn, score D3 Victory Points instead. ",						"set":"kdk"},
+        {"title":"Blood and Skulls for Khorne",	"number":13,    "type":"Khorne Daemonkin",  "description":"Only the skulls of the greatest champions are worthy of a place If y, beneath Khorne's mighty throne. Score 1 Victory Point at the end of your turn if at least the one enemy character was killed in a challenge during Th your turn. ",   		"scoring":"If at least one enemy with the Independent Ta Character special rule was killed in a challenge during your turn, score D3 Victory Points instead. ",						"set":"kdk"},
+        {"title":"Unfettered Butchery",				 	"number":14,    "type":"Khorne Daemonkin",  "description":"To spill the blood of the enemy whilst roaring in rage is to sing the praise of Khorne. ",   				 	     													 																																																					"scoring":"Score 1 Victory Point at the end of your turn if at least one enemy unit was completely destroyed during the Assault phase of your turn. ",						"set":"kdk"},
+        {"title":"Murder-Call",				 	  			"number":15,    "type":"Khorne Daemonkin",  "description":"The veil between reality and the Immaterium is sundered by the death screams of Khorne's foes. ",   				 	     													 																																																		"scoring":"Score 1 Victory Point at the end of your turn if, during your turn, at least one unit with the Daemon of Khorne special rule arrived from Deep Strike Reserve or was summoned as a result of the Blood for the Blood God! special rule. ",						"set":"kdk"},
+        {"title":"The Blood God's Scorn",				"number":16,    "type":"Khorne Daemonkin",  "description":"Cowards and those who dabble with Warp-magic are the most contemptible foes, deserving of only an agonising death. ",   				 	     													 																																								"scoring":"Score 1 Victory Point at the end of your turn if at least one enemy unit that was Falling Back at the beginning of your turn or one enemy unit with either the Psyker, Psychic Pilot or Brotherhood of Psykers/Sorcerers special rule was completely destroyed during your turn. ",						"set":"kdk"},
+
       ]};
       //alert(tacodata["tacos"][0]["title"]);
       var objTacoApp = angular.module("TacoApp", []);
@@ -338,7 +379,7 @@
           $scope.computedtype = function(uncomputedtype){
           	return uncomputedtype.replace(/\W/g, '')
           }
-          $scope.tacodeck = deckselect
+          $scope.tacodeck = deckselect;
         }        
       ]);
     </script>
@@ -346,14 +387,15 @@
   <body>
     <div class="TacoApp" ng-app="TacoApp" ng-controller="TacoController">
       <h1>
-        Tactical Objectives Generator
+        <span class="deckselecthtml"></span> Tactical Objectives Generator
       </h1>
       <div class="newgame"> 
       	<div class="option">
           <label>Select TacO deck to use:</label>
           <select name="deckselect" id="deckselect" ng-model="deckselect" ng-init="deckselect='std'">
-            <option value="std" selected="selected">Standard</option>
+            <option value="std">Standard</option>
             <option value="cod">Cities of Death</option>
+            <option value="kdk">Khorne Daemonkin</option>
             <option value="ork">Ork</option>
           </select>
         </div>
@@ -442,7 +484,19 @@
         </div>
       </div>
     </div>
-    <a class="shuffle">Shuffle Deck</a>
+    <div class="option brandnewgame"> 
+      <ul>
+        <li><a class="newgamestart">Start from Scratch</a></li>
+      </ul>  
+    </div>    
+    <div class="yousure">
+    	<p>Are you sure you want to start a new game, destroying this one?</p>
+      <ul>
+      	<li><a class="startno">No</a></li>
+        <li><a class="startyes">Yes</a></li>
+      </ul>  
+    </div>
+    <!--a class="shuffle">Shuffle Deck</a-->
     <!-- To keep track of cards that are no longer in the deck -->
     <input type="hidden" value="" id="cardsused" name="cardsused">
     <input type="hidden" value="" id="cardsinplay" name="cardsinplay">
