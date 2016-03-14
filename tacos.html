@@ -86,7 +86,9 @@
           if (specificstart != "none"){          	
           	// unhide the taco card
 	          var tacosshow = "." + usedset + ".taco-number-" + specificstart;
-	          $(tacosshow).css('display', 'inline-block');   
+	          $(tacosshow).css('display', 'inline-block');  
+	          $(tacosshow + ' .discard').css('display', 'none');
+	          $(tacosshow).css('background-color','#eeeeee');
 	          // Add to the cards used and cards in play hidden form elements
 	          $('#cardsused').val(specificstart);
 	          $('#cardsinplay').val(specificstart);
@@ -226,7 +228,7 @@
 	          $("." + usedset + ".taco-number-" + discardid[1]).css('display', 'none');
 	          if (removetype != 'score'){
 		          // add the card to the list of discarded cards
-		          $('#' + usedset + '-taco-discarded-number-'+discardid[1]).css('display', 'block');
+		          $('.' + usedset + '.taco-discarded-number-'+discardid[1]).css('display', 'block');
 		        }
 	          // replace the cards in play hidden field's value with the updated list
 	          $('#cardsinplay').val(cardsinplay);
@@ -234,7 +236,7 @@
           // if we're scoring, do extra stuff
           if (removetype == 'score'){
           	// pull out the points from the card
-          	var pointsscored = $('#points-' + discardid[1]).val();
+          	var pointsscored = $("." + usedset + '.taco-number-' + discardid[1] + ' .pointsselect').val();
 	          // add the card to the list of scored cards
 	          $('#taco-scored-number-'+discardid[1]+' .score').html(pointsscored);
 	          var thistitle = $(discardcardid + ' .cardtitle').html();
@@ -455,7 +457,7 @@
             <p class="cardscoring">{{thisTaco.scoring}}</p>
             <div class="option">
               <label for="points-{{thisTaco.number}}">Points:</label>
-              <select class="pointsselect" name="points-{{thisTaco.number}}" id="points-{{thisTaco.number}}">
+              <select class="pointsselect">
                 <option value="1">1</option>
                 <option value="2">2</option>
                 <option value="3">3</option>
@@ -478,7 +480,7 @@
           <div class="discarded">
             <h3>Discarded:</h3>
             <ul class="cardlist">
-              <li data-ng-repeat="thisTaco in tacos | orderBy:['role','number']" id="{{thisTaco.set}}-taco-discarded-number-{{thisTaco.number}}">{{thisTaco.number}} - {{thisTaco.title}}</li>
+              <li data-ng-repeat="thisTaco in tacos | orderBy:['role','number']" class="{{thisTaco.set}} taco-discarded-number-{{thisTaco.number}}">{{thisTaco.number}} - {{thisTaco.title}}</li>
             </ul>
           </div>
         </div>
