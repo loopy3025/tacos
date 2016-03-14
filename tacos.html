@@ -86,7 +86,9 @@
           if (specificstart != "none"){          	
           	// unhide the taco card
 	          var tacosshow = "." + usedset + ".taco-number-" + specificstart;
-	          $(tacosshow).css('display', 'inline-block');   
+	          $(tacosshow).css('display', 'inline-block');  
+	          $(tacosshow + ' .discard').css('display', 'none');
+	          $(tacosshow).css('background-color','#eeeeee');
 	          // Add to the cards used and cards in play hidden form elements
 	          $('#cardsused').val(specificstart);
 	          $('#cardsinplay').val(specificstart);
